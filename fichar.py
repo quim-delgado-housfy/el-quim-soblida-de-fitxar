@@ -18,6 +18,8 @@ import json
 import sys
 from datetime import date, datetime
 
+from pathlib import Path
+
 import requests
 
 BASE_URL = "https://api.factorialhr.com"
@@ -201,6 +203,25 @@ def cmd_desfichar(session: requests.Session, employee_id: int, year: int, month:
         print("  ⚠️  Dry-run — ningún cambio guardado")
 
 
+def load_credentials() -> tuple[str, str]:
+    env_path = Path(__file__).parent / ".env"
+    if env_path.exists():
+        email = password = ""
+        for line in env_path.read_text().splitlines():
+            if line.startswith("User:"):
+                email = line.split(":", 1)[1].strip()
+            elif line.startswith("Password:"):
+                password = line.split(":", 1)[1].strip()
+        if email and password:
+            print("🔑 Credencials carregades des de .env")
+            return email, password
+        print("⚠️  Arxiu .env trobat però incomplet, es demanen les credencials manualment.")
+
+    email = input("Email de Factorial: ").strip()
+    password = getpass.getpass("Contraseña: ")
+    return email, password
+
+
 def parse_month(value: str) -> tuple[int, int]:
     """Returns (year, month). Accepts '3', '03', 'marzo', '2026-03', etc."""
     now = datetime.now()
@@ -252,8 +273,7 @@ def main():
     if args.dry_run:
         print("🔍 MODO DRY-RUN — no se harán cambios reales\n")
 
-    email = input("Email de Factorial: ").strip()
-    password = getpass.getpass("Contraseña: ")
+    email, password = load_credentials()
 
     session = requests.Session()
     session.headers.update({"Accept": "application/json"})

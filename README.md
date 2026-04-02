@@ -66,7 +66,14 @@ Els dies no laborables i les absències es detecten automàticament des de Facto
 
 ## Credencials
 
-El script demana email i contrasenya de forma interactiva cada vegada que s'executa. No emmagatzema cap credencial.
+El script busca un arxiu `.env` al mateix directori amb el format:
+
+```
+User: el.teu.email@empresa.com
+Password: la_teva_contrasenya
+```
+
+Si no existeix, demana les credencials de forma interactiva. L'arxiu `.env` està inclòs al `.gitignore` i mai es pujarà al repositori.
 
 ## Inspirat en
 
